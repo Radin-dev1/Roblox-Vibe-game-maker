@@ -1,5 +1,6 @@
 import { HfInference } from "@huggingface/inference";
 import { AI_MODELS, getBestModelForTask, type AIModel } from "./models";
+import { KNOWLEDGE_BASE, type KnowledgeChunk } from "./knowledge-base";
 
 let hfClient: HfInference | null = null;
 
@@ -8,6 +9,44 @@ function getClient(token?: string): HfInference {
     hfClient = new HfInference(token || undefined);
   }
   return hfClient;
+}
+
+function retrieveKnowledge(message: string, maxChunks = 5): KnowledgeChunk[] {
+  const lower = message.toLowerCase();
+  const words = lower.split(/\s+/);
+
+  const scored = KNOWLEDGE_BASE.map((chunk) => {
+    let score = 0;
+    for (const keyword of chunk.keywords) {
+      const kw = keyword.toLowerCase();
+      if (lower.includes(kw)) {
+        score += kw.length > 4 ? 3 : 1;
+      }
+      for (const word of words) {
+        if (word === kw) score += 2;
+      }
+    }
+    if (lower.includes(chunk.category)) score += 2;
+    if (lower.includes(chunk.title.toLowerCase())) score += 5;
+    return { chunk, score };
+  });
+
+  return scored
+    .filter((s) => s.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, maxChunks)
+    .map((s) => s.chunk);
+}
+
+function buildKnowledgeContext(message: string): string {
+  const chunks = retrieveKnowledge(message);
+  if (chunks.length === 0) return "";
+
+  let ctx = "\n\n## Retrieved Knowledge (from training data)\n";
+  for (const chunk of chunks) {
+    ctx += `\n### ${chunk.title}\n${chunk.content}\n`;
+  }
+  return ctx;
 }
 
 export function detectTaskType(
@@ -126,10 +165,11 @@ export async function generateTextResponse(
   const client = getClient(token);
 
   try {
+    const knowledgeContext = buildKnowledgeContext(message);
     const response = await client.chatCompletion({
       model: model.hfId,
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: SYSTEM_PROMPT + knowledgeContext },
         { role: "user", content: message },
       ],
       max_tokens: 2048,
@@ -182,14 +222,19 @@ export async function generateImage(
   const client = getClient(token);
 
   try {
-    const blob = await client.textToImage({
+    const result = await client.textToImage({
       model: model.hfId,
       inputs: `roblox game asset, ${prompt}, game icon style, vibrant colors`,
     });
 
-    const buffer = await blob.arrayBuffer();
-    const base64 = Buffer.from(buffer).toString("base64");
-    const imageUrl = `data:image/png;base64,${base64}`;
+    let imageUrl: string;
+    if (typeof result === "object" && result !== null && "arrayBuffer" in result) {
+      const buffer = await (result as Blob).arrayBuffer();
+      const base64 = Buffer.from(buffer).toString("base64");
+      imageUrl = `data:image/png;base64,${base64}`;
+    } else {
+      imageUrl = String(result);
+    }
 
     return { imageUrl, model };
   } catch (err) {

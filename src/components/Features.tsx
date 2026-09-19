@@ -75,7 +75,7 @@ const itemVariants = {
   hidden: { opacity: 0, y: 24, filter: "blur(8px)" },
   visible: {
     opacity: 1, y: 0, filter: "blur(0px)",
-    transition: { duration: 0.7, ease: [0.32, 0.72, 0, 1] },
+    transition: { duration: 0.7, ease: [0.32, 0.72, 0, 1] as const },
   },
 };
 

@@ -44,3 +44,6 @@ next-env.d.ts
 /public/uploads/
 /public/thumbnails/
 /public/icons/
+
+# knowledge source repos (cloned for extraction)
+/.knowledge/
