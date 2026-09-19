@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ThemeProvider } from "@/lib/theme";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -22,11 +23,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      data-theme="dark"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#050505] text-[#f0f0f0]">
-        <div className="noise-overlay" />
-        {children}
+      <body className="min-h-full flex flex-col bg-bg text-text">
+        <ThemeProvider>
+          <div className="noise-overlay" />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
