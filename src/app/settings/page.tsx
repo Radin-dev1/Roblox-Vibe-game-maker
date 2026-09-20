@@ -3,12 +3,9 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import ThemeToggle from "@/components/ThemeToggle";
-import { useTheme } from "@/lib/theme";
 import { AI_MODELS, KNOWLEDGE_SOURCES } from "@/lib/models";
 
 export default function SettingsPage() {
-  const { theme } = useTheme();
   const [hfToken, setHfToken] = useState("");
   const [defaultModel, setDefaultModel] = useState("auto");
   const [saved, setSaved] = useState(false);
@@ -56,7 +53,6 @@ export default function SettingsPage() {
           </span>
         </Link>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
           <Link
             href="/studio"
             className="flex items-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
@@ -87,11 +83,8 @@ export default function SettingsPage() {
           <div className="rounded-[2rem] p-1.5 transition-theme" style={{ backgroundColor: "var(--bg-overlay)", borderWidth: 1, borderColor: "var(--edge)" }}>
             <div className="rounded-[calc(2rem-0.375rem)] p-6 md:p-8 transition-theme" style={{ backgroundColor: "var(--card)", borderWidth: 1, borderColor: "var(--edge)", boxShadow: "inset 0 1px 1px var(--inset)" }}>
               <h2 className="text-lg font-semibold mb-1 tracking-tight" style={{ color: "var(--text)" }}>Appearance</h2>
-              <p className="text-[13px] font-light mb-5" style={{ color: "var(--text-muted)" }}>Choose between dark and light mode.</p>
-              <div className="flex items-center gap-4">
-                <ThemeToggle />
-                <span className="text-[13px] capitalize" style={{ color: "var(--text-secondary)" }}>{theme} mode</span>
-              </div>
+              <p className="text-[13px] font-light mb-5" style={{ color: "var(--text-muted)" }}>Vibe uses a light, cream workspace so your game tools stay easy to read.</p>
+              <span className="inline-flex rounded-full border px-3 py-1.5 text-[12px] font-medium" style={{ color: "var(--text-secondary)", borderColor: "var(--edge)", backgroundColor: "var(--bg-overlay)" }}>Light workspace</span>
             </div>
           </div>
         </motion.section>
