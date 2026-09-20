@@ -4,10 +4,11 @@ import { generateImage } from "@/lib/ai";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { prompt, modelId, token } = body as {
+    const { prompt, modelId, token, style } = body as {
       prompt: string;
       modelId?: string;
       token?: string;
+      style?: "icon" | "thumbnail" | "concept";
     };
 
     if (!prompt || typeof prompt !== "string") {
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await generateImage(prompt, modelId, token);
+    const result = await generateImage(prompt, modelId, token, style);
 
     return NextResponse.json({
       imageUrl: result.imageUrl,

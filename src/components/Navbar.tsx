@@ -8,7 +8,9 @@ import ThemeToggle from "./ThemeToggle";
 const navLinks = [
   { label: "Features", href: "#features" },
   { label: "How it Works", href: "#how-it-works" },
-  { label: "Pricing", href: "#pricing" },
+  { label: "Workspace", href: "/workspace" },
+  { label: "Assets", href: "/assets" },
+  { label: "Plugin", href: "/plugin" },
 ];
 
 export default function Navbar() {
@@ -38,7 +40,14 @@ export default function Navbar() {
 
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
-              <a
+              link.href.startsWith("/") ? <Link
+                key={link.label}
+                href={link.href}
+                className="px-4 py-2 text-[13px] rounded-full transition-colors duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                {link.label}
+              </Link> : <a
                 key={link.label}
                 href={link.href}
                 className="px-4 py-2 text-[13px] rounded-full transition-colors duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
@@ -52,7 +61,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-2 pl-2">
             <ThemeToggle />
             <Link
-              href="/studio"
+              href="/workspace"
               className="group relative flex items-center gap-2 rounded-full bg-[var(--bg-overlay)] hover:bg-[var(--bg-overlay-hover)] pl-5 pr-1.5 py-1.5 text-[13px] font-medium transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97]"
               style={{ color: "var(--text)" }}
             >
@@ -109,7 +118,20 @@ export default function Navbar() {
             style={{ backgroundColor: "var(--modal-bg)" }}
           >
             {navLinks.map((link, i) => (
-              <motion.a
+              link.href.startsWith("/") ? <motion.div
+                key={link.label}
+                onClick={() => setOpen(false)}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{
+                  duration: 0.5,
+                  delay: i * 0.08,
+                  ease: [0.32, 0.72, 0, 1],
+                }}
+                className="text-3xl font-semibold transition-colors duration-300"
+                style={{ color: "var(--text-secondary)" }}
+              ><Link href={link.href}>{link.label}</Link></motion.div> : <motion.a
                 key={link.label}
                 href={link.href}
                 onClick={() => setOpen(false)}
@@ -133,7 +155,7 @@ export default function Navbar() {
               transition={{ duration: 0.5, delay: 0.3, ease: [0.32, 0.72, 0, 1] }}
             >
               <Link
-                href="/studio"
+                href="/workspace"
                 onClick={() => setOpen(false)}
                 className="mt-4 inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-accent to-teal px-8 py-4 text-lg font-semibold text-white"
               >

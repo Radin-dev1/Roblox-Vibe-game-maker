@@ -46,7 +46,9 @@ export const AI_MODELS: AIModel[] = [
     capabilities: ["text", "code", "reasoning", "planning"],
     icon: "L",
     color: "#7c5cfc",
-    requiresToken: true,
+    // Anonymous Hugging Face inference is attempted first; gated deployments
+    // still fall back gracefully when a local token is not configured.
+    requiresToken: false,
   },
   {
     id: "flux-dev",

@@ -1,0 +1,23 @@
+{
+  "purpose": "Retrieval and optional fine-tuning corpus for Roblox game making",
+  "github": [
+    { "id": "roblox-brain", "url": "https://github.com/TabooHarmony/roblox-brain", "role": "architecture, security, systems, production workflows" },
+    { "id": "roblox-dev-skills", "url": "https://github.com/ohzw/roblox-dev-skills", "role": "Studio building and map creation workflows" },
+    { "id": "luau-skills", "url": "https://github.com/luumenlabs/luau-skills", "role": "Luau language, types, APIs, networking, data" },
+    { "id": "roblox-skills", "url": "https://github.com/AshExplained/roblox-skills", "role": "game design, growth, monetization, security, publishing" }
+  ],
+  "huggingface": [
+    { "id": "Roblox/luau_corpus", "url": "https://huggingface.co/datasets/Roblox/luau_corpus", "role": "Luau code patterns" },
+    { "id": "487798RGW/Roblox-Luau-Reasoning-v1.0", "url": "https://huggingface.co/datasets/487798RGW/Roblox-Luau-Reasoning-v1.0", "role": "code reasoning and explanations" },
+    { "id": "Shashashasha/Roblox_Images_Dataset", "url": "https://huggingface.co/datasets/Shashashasha/Roblox_Images_Dataset", "role": "visual references for thumbnails and game worlds" },
+    { "id": "deletesystem32forfreerobux/roblox-avatars", "url": "https://huggingface.co/datasets/deletesystem32forfreerobux/roblox-avatars", "role": "avatar references" },
+    { "id": "Genetsds/roblox.avatars", "url": "https://huggingface.co/datasets/Genetsds/roblox.avatars", "role": "avatar references" }
+  ],
+  "uploaded": {
+    "name": "roblox-icons-thumbnails.zip",
+    "readme": "Roblox Game Icons & Thumbnails Dataset",
+    "iconCount": 43115,
+    "thumbnailCount": 100750,
+    "role": "visual retrieval and thumbnail prompt references"
+  }
+}

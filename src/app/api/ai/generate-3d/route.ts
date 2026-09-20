@@ -20,17 +20,26 @@ export async function POST(req: NextRequest) {
       ? AI_MODELS.find((m) => m.id === modelId)
       : AI_MODELS.find((m) => m.id === "z-image-turbo");
 
+    if (model && model.category !== "image-3d") {
+      return NextResponse.json({ error: "Select a 3D-capable model." }, { status: 400 });
+    }
+
+    const selectedModel = model || AI_MODELS.find((m) => m.id === "z-image-turbo");
+
     return NextResponse.json({
       status: "queued",
-      message: `3D generation with ${model?.name || "Z-Image Turbo"} is processing. This typically takes 30-60 seconds for complex models.`,
-      model: model
+      message: `3D generation with ${selectedModel?.name || "Z-Image Turbo"} is queued for a GPU worker.`,
+      model: selectedModel
         ? {
-            id: model.id,
-            name: model.name,
-            provider: model.provider,
+            id: selectedModel.id,
+            name: selectedModel.name,
+            provider: selectedModel.provider,
+            hfId: selectedModel.hfId,
           }
         : null,
-      note: "3D generation models require GPU compute. For full functionality, deploy with a GPU-enabled backend or use HuggingFace Spaces.",
+      asset: { format: "glb", prompt, ready: false },
+      keyless: true,
+      note: "No API key is required. The browser uses anonymous Hugging Face routing when available; production GLB export needs a GPU worker or Hugging Face Space.",
     });
   } catch {
     return NextResponse.json(

@@ -2,6 +2,15 @@ import { HfInference } from "@huggingface/inference";
 import { AI_MODELS, getBestModelForTask, type AIModel } from "./models";
 import { KNOWLEDGE_BASE, type KnowledgeChunk } from "./knowledge-base";
 
+const VISUAL_GUIDANCE = `
+Visual reference guidance: use the Roblox icon and thumbnail archive as a style
+reference, not as a source to reproduce a specific creator's artwork. Prefer
+one readable focal subject, strong silhouette, high contrast at small sizes,
+clear foreground/midground/background separation, and a 16:9 composition for
+thumbnails or a centered square composition for icons. Leave safe space for
+title text and avoid tiny UI copy, brand logos, and watermarks.
+`;
+
 let hfClient: HfInference | null = null;
 
 function getClient(token?: string): HfInference {
@@ -213,7 +222,8 @@ export async function generateTextResponse(
 export async function generateImage(
   prompt: string,
   modelId?: string,
-  token?: string
+  token?: string,
+  style?: "icon" | "thumbnail" | "concept"
 ): Promise<{ imageUrl: string; model: AIModel; error?: string }> {
   const model = modelId
     ? AI_MODELS.find((m) => m.id === modelId) || getBestModelForTask("image")
@@ -224,7 +234,7 @@ export async function generateImage(
   try {
     const result = await client.textToImage({
       model: model.hfId,
-      inputs: `roblox game asset, ${prompt}, game icon style, vibrant colors`,
+      inputs: `${style === "thumbnail" ? "Roblox game thumbnail, cinematic 16:9 composition" : style === "icon" ? "Roblox game icon, centered square composition" : "Roblox game concept art"}, ${prompt}, vibrant readable shapes. ${VISUAL_GUIDANCE}`,
     });
 
     let imageUrl: string;
