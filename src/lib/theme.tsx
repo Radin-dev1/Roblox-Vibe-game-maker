@@ -10,32 +10,24 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: "dark",
+  theme: "light",
   toggle: () => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem("vibe-theme") as Theme | null;
-      if (stored === "light" || stored === "dark") {
-        setTheme(stored);
-        document.documentElement.setAttribute("data-theme", stored);
-      }
+      setTheme("light");
+      document.documentElement.setAttribute("data-theme", "light");
+      localStorage.setItem("vibe-theme", "light");
     } catch {}
   }, []);
 
   const toggle = useCallback(() => {
-    setTheme((prev) => {
-      const next = prev === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      try {
-        localStorage.setItem("vibe-theme", next);
-      } catch {}
-      return next;
-    });
+    setTheme("light");
+    document.documentElement.setAttribute("data-theme", "light");
   }, []);
 
   return (

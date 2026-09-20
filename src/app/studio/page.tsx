@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import ThemeToggle from "@/components/ThemeToggle";
 import ModelSelector from "@/components/ModelSelector";
 import FileUpload from "@/components/FileUpload";
 
@@ -318,7 +317,6 @@ export default function StudioPage() {
         </Link>
 
         <div className="flex items-center gap-2">
-          <ThemeToggle />
           <Link
             href="/settings"
             className="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"

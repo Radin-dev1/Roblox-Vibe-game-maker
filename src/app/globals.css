@@ -2,46 +2,14 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ───── Dark mode (default) ───── */
+/* ───── Light mode (default) ───── */
 :root {
-  --bg: #050505;
-  --bg-raised: #0a0a0a;
-  --bg-overlay: rgba(255,255,255,0.04);
-  --bg-overlay-hover: rgba(255,255,255,0.08);
-  --text: #f0f0f0;
-  --text-secondary: rgba(255,255,255,0.5);
-  --text-muted: rgba(255,255,255,0.35);
-  --text-faint: rgba(255,255,255,0.2);
-  --edge: rgba(255,255,255,0.06);
-  --edge-hover: rgba(255,255,255,0.12);
-  --inset: rgba(255,255,255,0.06);
-  --card: #0a0a0a;
-  --nav-bg: rgba(255,255,255,0.04);
-  --modal-bg: rgba(0,0,0,0.9);
-  --orb-1: rgba(124,92,252,0.12);
-  --orb-2: rgba(0,212,170,0.08);
-  --orb-3: rgba(255,107,107,0.05);
-  --noise-opacity: 0.025;
-  --shadow-ambient: 0 0 40px rgba(124,92,252,0.04);
-  --user-bubble-bg: rgba(124,92,252,0.15);
-  --user-bubble-border: rgba(124,92,252,0.2);
-  --ai-bubble-bg: rgba(255,255,255,0.04);
-  --ai-bubble-border: rgba(255,255,255,0.06);
-  --system-bg: rgba(52,211,153,0.1);
-  --system-border: rgba(52,211,153,0.2);
-  --cta-text: #000;
-  --cta-bg: #fff;
-  --tag-bg: rgba(255,255,255,0.04);
-  --tag-border: rgba(255,255,255,0.06);
-  --window-dot: rgba(255,255,255,0.08);
-  --feature-icon-opacity: 0.08;
-  --number-color: rgba(255,255,255,0.04);
-  --pricing-highlight-from: rgba(124,92,252,0.2);
-  --pricing-highlight-to: rgba(0,212,170,0.1);
-  --pricing-highlight-border: rgba(124,92,252,0.2);
-  --scrollbar-thumb: rgba(255,255,255,0.08);
-  --gradient-fade-from: #050505;
-  --gradient-fade-via: #050505;
+  --bg: #fafaf9; --bg-raised: #ffffff; --bg-overlay: rgba(0,0,0,0.03); --bg-overlay-hover: rgba(0,0,0,0.06);
+  --text: #1a1a1a; --text-secondary: rgba(0,0,0,0.55); --text-muted: rgba(0,0,0,0.4); --text-faint: rgba(0,0,0,0.18);
+  --edge: rgba(0,0,0,0.07); --edge-hover: rgba(0,0,0,0.14); --inset: rgba(255,255,255,0.7); --card: #ffffff; --nav-bg: rgba(255,255,255,0.75); --modal-bg: rgba(255,255,255,0.95);
+  --orb-1: rgba(124,92,252,0.06); --orb-2: rgba(0,212,170,0.05); --orb-3: rgba(255,107,107,0.04); --noise-opacity: 0.012; --shadow-ambient: 0 4px 24px rgba(0,0,0,0.06);
+  --user-bubble-bg: rgba(124,92,252,0.08); --user-bubble-border: rgba(124,92,252,0.15); --ai-bubble-bg: rgba(0,0,0,0.03); --ai-bubble-border: rgba(0,0,0,0.07); --system-bg: rgba(34,197,94,0.08); --system-border: rgba(34,197,94,0.18);
+  --cta-text: #fff; --cta-bg: #1a1a1a; --tag-bg: rgba(0,0,0,0.04); --tag-border: rgba(0,0,0,0.07); --window-dot: rgba(0,0,0,0.1); --feature-icon-opacity: 0.1; --number-color: rgba(0,0,0,0.04); --pricing-highlight-from: rgba(124,92,252,0.08); --pricing-highlight-to: rgba(0,212,170,0.05); --pricing-highlight-border: rgba(124,92,252,0.12); --scrollbar-thumb: rgba(0,0,0,0.1); --gradient-fade-from: #fafaf9; --gradient-fade-via: #fafaf9;
 }
 
 /* ───── Light mode ───── */

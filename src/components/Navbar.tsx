@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import ThemeToggle from "./ThemeToggle";
 
 const navLinks = [
   { label: "Features", href: "#features" },
@@ -59,7 +58,6 @@ export default function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center gap-2 pl-2">
-            <ThemeToggle />
             <Link
               href="/studio"
               className="group relative flex items-center gap-2 rounded-full bg-[var(--bg-overlay)] hover:bg-[var(--bg-overlay-hover)] pl-5 pr-1.5 py-1.5 text-[13px] font-medium transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97]"
@@ -76,7 +74,6 @@ export default function Navbar() {
           </div>
 
           <div className="md:hidden flex items-center gap-1">
-            <ThemeToggle />
             <button
               onClick={() => setOpen(!open)}
               className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[var(--bg-overlay)] transition-colors duration-300"
