@@ -24,6 +24,8 @@ export async function POST(req: NextRequest) {
     const result = await generateTextResponse(message, modelId, token, safeHistory);
 
     return NextResponse.json({
+      ok: !result.error,
+      studioChanges: false,
       text: result.text,
       model: {
         id: result.model.id,

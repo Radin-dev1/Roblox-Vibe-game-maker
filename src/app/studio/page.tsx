@@ -164,6 +164,7 @@ export default function StudioPage() {
   const [isConnected] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  const [hfToken, setHfToken] = useState("");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -173,6 +174,14 @@ export default function StudioPage() {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  useEffect(() => {
+    try {
+      setHfToken(localStorage.getItem("vibe-hf-token") || "");
+    } catch {
+      // Browser storage may be unavailable; anonymous Hugging Face mode remains explicit.
+    }
+  }, []);
 
   const sendToAI = useCallback(
     async (userMessage: string, history: Array<{ role: "user" | "assistant"; content: string }>) => {
@@ -185,6 +194,7 @@ export default function StudioPage() {
           body: JSON.stringify({
             message: userMessage,
             modelId: selectedModel,
+            token: hfToken || undefined,
             history,
           }),
         });
@@ -200,7 +210,7 @@ export default function StudioPage() {
           const imageRes = await fetch("/api/ai/generate-image", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt: userMessage, style }),
+            body: JSON.stringify({ prompt: userMessage, style, token: hfToken || undefined }),
           });
           const imageData = await imageRes.json();
           if (imageData.imageUrl) generatedAttachments.push({ url: imageData.imageUrl, name: "Hugging Face generated visual", type: "image" });
@@ -230,27 +240,19 @@ export default function StudioPage() {
           },
         ]);
 
-        setTimeout(() => {
-          const instanceCount = Math.floor(Math.random() * 40) + 5;
-          const scriptCount = Math.floor(Math.random() * 6) + 1;
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: generateId(),
-              role: "system",
-              content: `Synced to Roblox Studio — ${instanceCount} instances created, ${scriptCount} scripts inserted`,
-              timestamp: new Date(),
-            },
-          ]);
-        }, 1500);
+        setMessages((prev) => [...prev, {
+          id: generateId(),
+          role: "system",
+          content: data.ok ? "Hugging Face generated this response. No Roblox Studio changes were made." : "No AI output was generated. No Roblox Studio changes were made.",
+          timestamp: new Date(),
+        }]);
       } catch {
         setMessages((prev) => [
           ...prev,
           {
             id: generateId(),
             role: "assistant",
-            content:
-              "Connection to AI service failed. This can happen when HuggingFace servers are busy. Using built-in knowledge instead.\n\nTry again in a moment, or specify a different model in the model selector.",
+            content: "The AI provider request failed, so no generated answer or Studio change was claimed. Check the provider message and try again.",
             timestamp: new Date(),
             modelName: "Vibe AI",
             modelColor: "#7c5cfc",
@@ -261,7 +263,7 @@ export default function StudioPage() {
         setIsTyping(false);
       }
     },
-    [selectedModel]
+    [hfToken, selectedModel]
   );
 
   const handleSend = useCallback(() => {

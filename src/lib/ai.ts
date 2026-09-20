@@ -11,6 +11,12 @@ thumbnails or a centered square composition for icons. Leave safe space for
 title text and avoid tiny UI copy, brand logos, and watermarks.
 `;
 
+const MODEL_BEHAVIOR: Record<string, string> = {
+  "gemma-4": "\nModel role: be a precise Luau implementation partner. Return only decisions supported by the user's request and call out assumptions.\n",
+  "janus-pro": "\nModel role: reason about game architecture and dependencies before proposing code. Preserve every named mechanic.\n",
+  "llama-3": "\nModel role: review the request like a senior Roblox engineer. Prefer a small correct implementation over invented features.\n",
+};
+
 let hfClient: HfInference | null = null;
 
 function getClient(token?: string): HfInference {
@@ -180,7 +186,7 @@ export async function generateTextResponse(
       model: model.hfId,
       provider: "hf-inference",
       messages: [
-        { role: "system", content: SYSTEM_PROMPT + knowledgeContext },
+        { role: "system", content: SYSTEM_PROMPT + (MODEL_BEHAVIOR[model.id] || "") + knowledgeContext },
         ...history.slice(-8),
         { role: "user", content: message },
       ],
@@ -203,7 +209,7 @@ export async function generateTextResponse(
       const generated = await client.textGeneration({
         model: model.hfId,
         provider: "hf-inference",
-        inputs: `${SYSTEM_PROMPT}${buildKnowledgeContext(message)}\n\nRecent conversation:\n${history.slice(-6).map((item) => `${item.role}: ${item.content}`).join("\n")}\n\nCurrent user request (follow exactly): ${message}\n\nAssistant:`,
+        inputs: `${SYSTEM_PROMPT}${MODEL_BEHAVIOR[model.id] || ""}${buildKnowledgeContext(message)}\n\nRecent conversation:\n${history.slice(-6).map((item) => `${item.role}: ${item.content}`).join("\n")}\n\nCurrent user request (follow exactly): ${message}\n\nAssistant:`,
         max_new_tokens: 1536,
         temperature: 0.55,
         return_full_text: false,
@@ -218,28 +224,7 @@ export async function generateTextResponse(
       // Continue to the deterministic Roblox fallback below.
     }
 
-    const isRateLimit =
-      errorMessage.includes("429") || errorMessage.includes("rate");
-    const isModelLoading =
-      errorMessage.includes("loading") || errorMessage.includes("503");
-    const isAuth = errorMessage.includes("401") || errorMessage.includes("403");
-
-    let fallbackText: string;
-
-    if (isModelLoading) {
-      fallbackText = `The model **${model.name}** is currently loading on HuggingFace servers. This can take 1-2 minutes for large models. Please try again shortly.\n\nIn the meantime, here's what I would build for "${message}":\n\n`;
-      fallbackText += generateFallbackResponse(message);
-    } else if (isRateLimit) {
-      fallbackText = `Rate limit reached for **${model.name}**. Free-tier HuggingFace inference has request limits.\n\nHere's a preview of what I'd generate:\n\n`;
-      fallbackText += generateFallbackResponse(message);
-    } else if (isAuth) {
-      fallbackText = `**${model.name}** is unavailable for anonymous inference right now.\n\nUsing the built-in Roblox knowledge fallback so you can keep building:\n\n`;
-      fallbackText += generateFallbackResponse(message);
-    } else {
-      fallbackText = generateFallbackResponse(message);
-    }
-
-    return { text: fallbackText, model, error: errorMessage };
+    return { text: "", model, error: `Hugging Face did not generate a response with ${model.name}: ${errorMessage}` };
   }
 }
 
