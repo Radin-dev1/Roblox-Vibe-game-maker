@@ -8,7 +8,6 @@ import ThemeToggle from "./ThemeToggle";
 const navLinks = [
   { label: "Features", href: "#features" },
   { label: "How it Works", href: "#how-it-works" },
-  { label: "Blocky Builder", href: "/workspace" },
   { label: "Assets", href: "/assets" },
   { label: "Plugin", href: "/plugin" },
 ];
@@ -61,7 +60,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-2 pl-2">
             <ThemeToggle />
             <Link
-              href="/workspace"
+              href="/studio"
               className="group relative flex items-center gap-2 rounded-full bg-[var(--bg-overlay)] hover:bg-[var(--bg-overlay-hover)] pl-5 pr-1.5 py-1.5 text-[13px] font-medium transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97]"
               style={{ color: "var(--text)" }}
             >
@@ -155,7 +154,7 @@ export default function Navbar() {
               transition={{ duration: 0.5, delay: 0.3, ease: [0.32, 0.72, 0, 1] }}
             >
               <Link
-                href="/workspace"
+                href="/studio"
                 onClick={() => setOpen(false)}
                 className="mt-4 inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-accent to-teal px-8 py-4 text-lg font-semibold text-white"
               >

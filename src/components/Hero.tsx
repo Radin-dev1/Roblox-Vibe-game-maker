@@ -36,7 +36,7 @@ export default function Hero() {
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ ...transition, delay: 0.42 }} className="mt-9 flex flex-wrap items-center gap-3">
-            <Link href="/workspace" className="group inline-flex items-center gap-3 rounded-full px-5 py-3 text-[14px] font-semibold transition-transform hover:-translate-y-0.5" style={{ backgroundColor: "var(--text)", color: "var(--bg)" }}>
+            <Link href="/studio" className="group inline-flex items-center gap-3 rounded-full px-5 py-3 text-[14px] font-semibold transition-transform hover:-translate-y-0.5" style={{ backgroundColor: "var(--text)", color: "var(--bg)" }}>
               Open the build room <span className="grid h-7 w-7 place-items-center rounded-full bg-accent text-white transition-transform group-hover:rotate-45">↗</span>
             </Link>
             <Link href="/assets" className="rounded-full border px-5 py-3 text-[14px] font-medium transition-colors hover:border-accent/50" style={{ borderColor: "var(--edge)", color: "var(--text-secondary)" }}>Browse visual references</Link>
