@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateImage } from "@/lib/ai";
+import { createVisualFallback, generateImage } from "@/lib/ai";
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       // Keep the visual flow useful even when anonymous inference is cold or rate limited.
-      imageUrl: result.imageUrl || "/assets/dataset/thumbs/10000381984_20260407_081616_0.webp",
+      imageUrl: result.imageUrl || createVisualFallback(prompt, style || "thumbnail"),
       fallback: !result.imageUrl,
       model: {
         id: result.model.id,

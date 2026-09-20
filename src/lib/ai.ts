@@ -11,6 +11,54 @@ thumbnails or a centered square composition for icons. Leave safe space for
 title text and avoid tiny UI copy, brand logos, and watermarks.
 `;
 
+function escapeSvgText(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" }[character] || character));
+}
+
+/** A prompt-driven local visual fallback for keyless/offline thumbnail creation. */
+export function createVisualFallback(prompt: string, style: "icon" | "thumbnail" | "concept" = "thumbnail"): string {
+  const square = style === "icon";
+  const width = square ? 1024 : 1536;
+  const height = square ? 1024 : 864;
+  const words = prompt.trim().split(/\s+/).filter(Boolean).slice(0, 5).join(" ") || "YOUR ROBLOX WORLD";
+  const title = escapeSvgText(words.toUpperCase().slice(0, 34));
+  let hash = 0;
+  for (const character of prompt) hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
+  const hue = hash % 360;
+  const accent = `hsl(${hue}, 88%, 64%)`;
+  const accent2 = `hsl(${(hue + 72) % 360}, 84%, 56%)`;
+  const sceneX = square ? 512 : 880;
+  const sceneY = square ? 610 : 590;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b1020"/><stop offset=".5" stop-color="#142c51"/><stop offset="1" stop-color="#071016"/></linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${accent}"/><stop offset="1" stop-color="${accent2}"/></linearGradient>
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#284e67"/><stop offset="1" stop-color="#101923"/></linearGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="42"/></filter>
+    <filter id="shadow"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000" flood-opacity=".45"/></filter>
+  </defs>
+  <rect width="${width}" height="${height}" fill="url(#bg)"/>
+  <circle cx="${square ? 170 : 290}" cy="${square ? 230 : 180}" r="170" fill="${accent}" opacity=".26" filter="url(#blur)"/>
+  <circle cx="${square ? 870 : 1250}" cy="${square ? 820 : 120}" r="210" fill="${accent2}" opacity=".2" filter="url(#blur)"/>
+  <path d="M0 ${height * .7} Q${width * .25} ${height * .58} ${width * .5} ${height * .7} T${width} ${height * .62} V${height} H0Z" fill="url(#ground)"/>
+  <path d="M0 ${height * .78} L${width * .22} ${height * .65} L${width * .46} ${height * .8} L${width * .72} ${height * .63} L${width} ${height * .74} V${height} H0Z" fill="#0a1119" opacity=".65"/>
+  <g filter="url(#shadow)" transform="translate(${sceneX - 190} ${sceneY - 150})">
+    <rect x="35" y="145" width="310" height="180" rx="28" fill="#e6a95f"/>
+    <path d="M0 160 L190 0 L380 160Z" fill="url(#glow)"/>
+    <rect x="160" y="225" width="68" height="100" rx="12" fill="#513d5e"/>
+    <rect x="68" y="190" width="70" height="62" rx="10" fill="#7ed4e8" stroke="#d4fbff" stroke-width="8"/>
+    <rect x="242" y="190" width="70" height="62" rx="10" fill="#7ed4e8" stroke="#d4fbff" stroke-width="8"/>
+    <circle cx="25" cy="130" r="38" fill="#53c982"/><circle cx="355" cy="130" r="38" fill="#53c982"/>
+  </g>
+  <g opacity=".9"><circle cx="${sceneX - 330}" cy="${sceneY - 260}" r="10" fill="#fff"/><circle cx="${sceneX + 310}" cy="${sceneY - 225}" r="7" fill="#fff"/><circle cx="${sceneX + 380}" cy="${sceneY - 340}" r="5" fill="#fff"/></g>
+  <rect x="${square ? 70 : 88}" y="${square ? 70 : 64}" width="${square ? 884 : 760}" height="${square ? 884 : 170}" rx="38" fill="#050914" opacity=".42" stroke="#fff" stroke-opacity=".16" stroke-width="3"/>
+  <text x="${square ? 512 : 128}" y="${square ? 166 : 126}" text-anchor="${square ? "middle" : "start"}" fill="#fff" font-family="Arial, sans-serif" font-size="${square ? 62 : 55}" font-weight="900" letter-spacing="3">${title}</text>
+  <text x="${square ? 512 : 128}" y="${square ? 225 : 176}" text-anchor="${square ? "middle" : "start"}" fill="${accent}" font-family="Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="5">VIBE BUILD • PLAY NOW</text>
+  <rect x="${square ? 420 : 128}" y="${square ? 900 : 785}" width="${square ? 184 : 280}" height="8" rx="4" fill="url(#glow)"/>
+</svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
 let hfClient: HfInference | null = null;
 
 function getClient(token?: string): HfInference {
