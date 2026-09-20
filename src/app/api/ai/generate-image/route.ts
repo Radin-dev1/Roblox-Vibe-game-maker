@@ -21,7 +21,9 @@ export async function POST(req: NextRequest) {
     const result = await generateImage(prompt, modelId, token, style);
 
     return NextResponse.json({
-      imageUrl: result.imageUrl,
+      // Keep the visual flow useful even when anonymous inference is cold or rate limited.
+      imageUrl: result.imageUrl || "/assets/dataset/thumbs/10000381984_20260407_081616_0.webp",
+      fallback: !result.imageUrl,
       model: {
         id: result.model.id,
         name: result.model.name,

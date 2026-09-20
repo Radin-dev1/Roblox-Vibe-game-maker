@@ -168,7 +168,7 @@ export async function generateTextResponse(
 ): Promise<{ text: string; model: AIModel; error?: string }> {
   const taskType = detectTaskType(message);
   const model = modelId
-    ? AI_MODELS.find((m) => m.id === modelId) || getBestModelForTask(taskType)
+    ? (AI_MODELS.find((m) => m.id === modelId && m.category === "text") || getBestModelForTask(taskType))
     : getBestModelForTask(taskType);
 
   const client = getClient(token);
@@ -209,7 +209,7 @@ export async function generateTextResponse(
       fallbackText = `Rate limit reached for **${model.name}**. Free-tier HuggingFace inference has request limits.\n\nHere's a preview of what I'd generate:\n\n`;
       fallbackText += generateFallbackResponse(message);
     } else if (isAuth) {
-      fallbackText = `**${model.name}** requires a HuggingFace token (it's a gated model). Add your token in Settings to use this model.\n\nUsing built-in knowledge instead:\n\n`;
+      fallbackText = `**${model.name}** is unavailable for anonymous inference right now.\n\nUsing the built-in Roblox knowledge fallback so you can keep building:\n\n`;
       fallbackText += generateFallbackResponse(message);
     } else {
       fallbackText = generateFallbackResponse(message);
@@ -226,7 +226,7 @@ export async function generateImage(
   style?: "icon" | "thumbnail" | "concept"
 ): Promise<{ imageUrl: string; model: AIModel; error?: string }> {
   const model = modelId
-    ? AI_MODELS.find((m) => m.id === modelId) || getBestModelForTask("image")
+    ? (AI_MODELS.find((m) => m.id === modelId && m.category === "image-2d") || getBestModelForTask("image"))
     : getBestModelForTask("image");
 
   const client = getClient(token);
@@ -253,7 +253,7 @@ export async function generateImage(
     return {
       imageUrl: "",
       model,
-      error: `Image generation with ${model.name} failed: ${errorMessage}. Try adding a HuggingFace token in Settings for better access.`,
+      error: `Image generation with ${model.name} is unavailable anonymously (${errorMessage}). A visual reference fallback is shown so the build can continue.`,
     };
   }
 }

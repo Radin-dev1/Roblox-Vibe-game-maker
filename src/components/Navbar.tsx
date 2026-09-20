@@ -8,7 +8,7 @@ import ThemeToggle from "./ThemeToggle";
 const navLinks = [
   { label: "Features", href: "#features" },
   { label: "How it Works", href: "#how-it-works" },
-  { label: "Workspace", href: "/workspace" },
+  { label: "Blocky Builder", href: "/workspace" },
   { label: "Assets", href: "/assets" },
   { label: "Plugin", href: "/plugin" },
 ];

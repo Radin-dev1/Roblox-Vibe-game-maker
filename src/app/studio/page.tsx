@@ -15,6 +15,13 @@ interface Attachment {
   type: "image" | "3d-model" | "unknown";
 }
 
+function generationKind(message: string): "image" | "3d" | null {
+  const lower = message.toLowerCase();
+  if (/(thumbnail|game icon|icon|cover art|image|concept art|2d)/.test(lower)) return "image";
+  if (/(3d|mesh|model|prop|ugc|wearable|accessory)/.test(lower)) return "3d";
+  return null;
+}
+
 interface Message {
   id: string;
   role: MessageRole;
@@ -183,6 +190,28 @@ export default function StudioPage() {
 
         const data = await res.json();
 
+        const generatedAttachments: Attachment[] = [];
+        const kind = generationKind(userMessage);
+
+        if (kind === "image") {
+          const style = /icon/i.test(userMessage) ? "icon" : /thumbnail|cover/i.test(userMessage) ? "thumbnail" : "concept";
+          const imageRes = await fetch("/api/ai/generate-image", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: userMessage, style }),
+          });
+          const imageData = await imageRes.json();
+          if (imageData.imageUrl) generatedAttachments.push({ url: imageData.imageUrl, name: imageData.fallback ? "Reference preview (provider unavailable)" : "AI generated visual", type: "image" });
+        } else if (kind === "3d") {
+          const modelRes = await fetch("/api/ai/generate-3d", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: userMessage }),
+          });
+          const modelData = await modelRes.json();
+          generatedAttachments.push({ url: `queued:${modelData.model?.name || "3D worker"}`, name: modelData.asset?.format === "glb" ? "GLB model queued" : "3D model job", type: "3d-model" });
+        }
+
         setMessages((prev) => [
           ...prev,
           {
@@ -193,6 +222,7 @@ export default function StudioPage() {
             modelName: data.model?.name || "Vibe AI",
             modelColor: data.model?.color || "#7c5cfc",
             modelIcon: data.model?.icon || "V",
+            attachments: generatedAttachments.length ? generatedAttachments : undefined,
           },
         ]);
 
@@ -245,7 +275,7 @@ export default function StudioPage() {
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setAttachments([]);
-    sendToAI(trimmed);
+    sendToAI(trimmed || "Review the uploaded asset and explain how to use it in a Roblox game.");
   }, [input, attachments, sendToAI]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
