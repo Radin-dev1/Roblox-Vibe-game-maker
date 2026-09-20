@@ -51,12 +51,12 @@ export const AI_MODELS: AIModel[] = [
     requiresToken: false,
   },
   {
-    id: "flux-dev",
-    name: "FLUX.1 Dev",
-    provider: "Black Forest Labs",
-    hfId: "black-forest-labs/FLUX.1-dev",
+    id: "sdxl-base",
+    name: "Stable Diffusion XL",
+    provider: "Stability AI",
+    hfId: "stabilityai/stable-diffusion-xl-base-1.0",
     category: "image-2d",
-    description: "High-quality 2D image generation from text prompts",
+    description: "Ungated high-quality 2D image generation from text prompts",
     capabilities: ["text-to-image", "concept-art", "thumbnails"],
     icon: "F",
     color: "#ff6b6b",
@@ -178,7 +178,7 @@ export function getBestModelForTask(
     case "plan":
       return AI_MODELS.find((m) => m.id === "janus-pro")!;
     case "image":
-      return AI_MODELS.find((m) => m.id === "flux-dev")!;
+      return AI_MODELS.find((m) => m.id === "sdxl-base")!;
     case "3d":
       return AI_MODELS.find((m) => m.id === "z-image-turbo")!;
   }

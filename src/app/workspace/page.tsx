@@ -29,7 +29,7 @@ const INITIAL_SCENE: SceneNode[] = [
 
 const MODES: Array<{ id: Mode; label: string; icon: string; description: string; model: string }> = [
   { id: "3d", label: "3D asset", icon: "◇", description: "Generate a blocky prop or character", model: "z-image-turbo" },
-  { id: "thumbnail", label: "Thumbnail", icon: "▧", description: "Create a game icon or 16:9 cover", model: "flux-dev" },
+  { id: "thumbnail", label: "Thumbnail", icon: "▧", description: "Create a game icon or 16:9 cover", model: "sdxl-base" },
   { id: "gui", label: "GUI", icon: "▦", description: "Plan a responsive ScreenGui", model: "janus-pro" },
   { id: "code", label: "Luau", icon: "</>", description: "Write a typed game system", model: "gemma-4" },
   { id: "animation", label: "Animation", icon: "◌", description: "Draft a keyframe or tween sequence", model: "gemma-4" },
