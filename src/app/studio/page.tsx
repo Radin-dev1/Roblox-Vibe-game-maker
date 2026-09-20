@@ -192,6 +192,7 @@ export default function StudioPage() {
         const data = await res.json();
 
         const generatedAttachments: Attachment[] = [];
+        const generationNotes: string[] = [];
         const kind = generationKind(userMessage);
 
         if (kind === "image") {
@@ -202,7 +203,8 @@ export default function StudioPage() {
             body: JSON.stringify({ prompt: userMessage, style }),
           });
           const imageData = await imageRes.json();
-          if (imageData.imageUrl) generatedAttachments.push({ url: imageData.imageUrl, name: imageData.fallback ? "Reference preview (provider unavailable)" : "AI generated visual", type: "image" });
+          if (imageData.imageUrl) generatedAttachments.push({ url: imageData.imageUrl, name: "Hugging Face generated visual", type: "image" });
+          if (imageData.error) generationNotes.push(`Hugging Face image generation: ${imageData.error}`);
         } else if (kind === "3d") {
           const modelRes = await fetch("/api/ai/generate-3d", {
             method: "POST",
@@ -211,6 +213,7 @@ export default function StudioPage() {
           });
           const modelData = await modelRes.json();
           generatedAttachments.push({ url: `queued:${modelData.model?.name || "3D worker"}`, name: modelData.asset?.format === "glb" ? "GLB model queued" : "3D model job", type: "3d-model" });
+          if (modelData.note) generationNotes.push(modelData.note);
         }
 
         setMessages((prev) => [
@@ -218,7 +221,7 @@ export default function StudioPage() {
           {
             id: generateId(),
             role: "assistant",
-            content: data.text || data.error || "Something went wrong. Try again.",
+            content: [data.text || data.error || "Something went wrong. Try again.", ...generationNotes].join("\n\n"),
             timestamp: new Date(),
             modelName: data.model?.name || "Vibe AI",
             modelColor: data.model?.color || "#7c5cfc",

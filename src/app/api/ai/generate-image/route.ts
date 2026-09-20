@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createVisualFallback, generateImage } from "@/lib/ai";
+import { generateImage } from "@/lib/ai";
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,9 +21,8 @@ export async function POST(req: NextRequest) {
     const result = await generateImage(prompt, modelId, token, style);
 
     return NextResponse.json({
-      // Keep the visual flow useful even when anonymous inference is cold or rate limited.
-      imageUrl: result.imageUrl || createVisualFallback(prompt, style || "thumbnail"),
-      fallback: !result.imageUrl,
+      imageUrl: result.imageUrl || null,
+      fallback: false,
       model: {
         id: result.model.id,
         name: result.model.name,
