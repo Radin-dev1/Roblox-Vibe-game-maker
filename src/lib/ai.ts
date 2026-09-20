@@ -285,7 +285,17 @@ export async function generateImage(
 
 function generateFallbackResponse(message: string): string {
   const lower = message.toLowerCase();
-  const brief = `**Requested brief:** ${message.trim()}\n\n`;
+  let fingerprint = 0;
+  for (const character of message) fingerprint = (fingerprint * 33 + character.charCodeAt(0)) >>> 0;
+  const variation = [
+    "Build focus: a small playable first pass with clear extension points.",
+    "Build focus: server authority first, then a lightweight player-facing loop.",
+    "Build focus: make the core interaction feel good before adding polish.",
+    "Build focus: keep the system modular so the next request can extend it cleanly.",
+    "Build focus: prioritize readable feedback, validation, and easy testing in Studio.",
+  ][fingerprint % 5];
+  const brief = `**Requested brief:** ${message.trim()}\n\n${variation}\n\n`;
+  const stageCount = 12 + (fingerprint % 15);
 
   if (lower.includes("obby") || lower.includes("obstacle")) {
     return `${brief}## Obby System
@@ -294,10 +304,10 @@ I'll create a complete obstacle course with checkpoints.
 
 **Instances to create:**
 - Folder "ObbyStages" in Workspace
-- 20 Stage parts with increasing difficulty
+- ${stageCount} Stage parts with increasing difficulty
 - SpawnLocation at each checkpoint
 - KillBrick parts with Touched connections
-- Victory platform at stage 20
+- Victory platform at stage ${stageCount}
 
 \`\`\`lua
 -- ServerScriptService/ObbyManager.lua
