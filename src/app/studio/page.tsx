@@ -175,7 +175,7 @@ export default function StudioPage() {
   }, [messages]);
 
   const sendToAI = useCallback(
-    async (userMessage: string) => {
+    async (userMessage: string, history: Array<{ role: "user" | "assistant"; content: string }>) => {
       setIsTyping(true);
 
       try {
@@ -185,6 +185,7 @@ export default function StudioPage() {
           body: JSON.stringify({
             message: userMessage,
             modelId: selectedModel,
+            history,
           }),
         });
 
@@ -275,8 +276,12 @@ export default function StudioPage() {
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setAttachments([]);
-    sendToAI(trimmed || "Review the uploaded asset and explain how to use it in a Roblox game.");
-  }, [input, attachments, sendToAI]);
+    const history = messages
+      .filter((message) => message.role === "user" || message.role === "assistant")
+      .slice(-8)
+      .map((message) => ({ role: message.role as "user" | "assistant", content: message.content }));
+    sendToAI(trimmed || "Review the uploaded asset and explain how to use it in a Roblox game.", history);
+  }, [input, attachments, messages, sendToAI]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {

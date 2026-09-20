@@ -4,10 +4,11 @@ import { generateTextResponse } from "@/lib/ai";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { message, modelId, token } = body as {
+    const { message, modelId, token, history } = body as {
       message: string;
       modelId?: string;
       token?: string;
+      history?: Array<{ role: "user" | "assistant"; content: string }>;
     };
 
     if (!message || typeof message !== "string") {
@@ -17,7 +18,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await generateTextResponse(message, modelId, token);
+    const safeHistory = Array.isArray(history)
+      ? history.filter((item) => item && (item.role === "user" || item.role === "assistant") && typeof item.content === "string").slice(-8)
+      : [];
+    const result = await generateTextResponse(message, modelId, token, safeHistory);
 
     return NextResponse.json({
       text: result.text,

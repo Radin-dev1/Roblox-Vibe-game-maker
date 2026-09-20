@@ -164,7 +164,8 @@ Always generate production-quality Luau code. Use type annotations. Follow the p
 export async function generateTextResponse(
   message: string,
   modelId?: string,
-  token?: string
+  token?: string,
+  history: Array<{ role: "user" | "assistant"; content: string }> = []
 ): Promise<{ text: string; model: AIModel; error?: string }> {
   const taskType = detectTaskType(message);
   const model = modelId
@@ -179,6 +180,7 @@ export async function generateTextResponse(
       model: model.hfId,
       messages: [
         { role: "system", content: SYSTEM_PROMPT + knowledgeContext },
+        ...history.slice(-8),
         { role: "user", content: message },
       ],
       max_tokens: 2048,
@@ -193,6 +195,26 @@ export async function generateTextResponse(
   } catch (err) {
     const errorMessage =
       err instanceof Error ? err.message : "Unknown error occurred";
+
+    // Some Hugging Face deployments expose native text generation but not
+    // the OpenAI-compatible chat router. Try that path before falling back.
+    try {
+      const generated = await client.textGeneration({
+        model: model.hfId,
+        inputs: `${SYSTEM_PROMPT}${buildKnowledgeContext(message)}\n\nRecent conversation:\n${history.slice(-6).map((item) => `${item.role}: ${item.content}`).join("\n")}\n\nCurrent user request (follow exactly): ${message}\n\nAssistant:`,
+        max_new_tokens: 1536,
+        temperature: 0.55,
+        return_full_text: false,
+      });
+      const text = typeof generated === "string"
+        ? generated
+        : Array.isArray(generated)
+          ? generated[0]?.generated_text
+          : generated.generated_text;
+      if (text?.trim()) return { text: text.trim(), model };
+    } catch {
+      // Continue to the deterministic Roblox fallback below.
+    }
 
     const isRateLimit =
       errorMessage.includes("429") || errorMessage.includes("rate");
@@ -260,9 +282,10 @@ export async function generateImage(
 
 function generateFallbackResponse(message: string): string {
   const lower = message.toLowerCase();
+  const brief = `**Requested brief:** ${message.trim()}\n\n`;
 
   if (lower.includes("obby") || lower.includes("obstacle")) {
-    return `## Obby System
+    return `${brief}## Obby System
 
 I'll create a complete obstacle course with checkpoints.
 
@@ -311,7 +334,7 @@ Players.PlayerAdded:Connect(onPlayerAdded)
   }
 
   if (lower.includes("sword") || lower.includes("combat") || lower.includes("fight")) {
-    return `## Combat System
+    return `${brief}## Combat System
 
 Building a sword fighting system with combos and special attacks.
 
@@ -376,8 +399,53 @@ tool.Activated:Connect(performAttack)
 \`\`\``;
   }
 
+  if (lower.includes("fish") || lower.includes("fishing") || lower.includes("bait") || lower.includes("fishing rod")) {
+    return `${brief}## Fishing game system
+
+I will build the fishing loop you requested: equip a rod, consume bait, catch fish into an inventory, and sell catches for coins.
+
+**Instances to create:**
+- StarterPack/FishingRod with a validated cast action
+- ReplicatedStorage/Remotes/CastLine, CatchFish, and SellFish
+- ServerScriptService/FishingService.server.lua for catch rolls, bait, inventory, and coins
+- StarterGui/FishingGui for bait count, catch result, inventory, and sell button
+
+**Rules:** the server owns catch chances, bait consumption, inventory limits, and coin rewards. The client only requests an action and renders the result.
+
+\`\`\`lua
+-- ServerScriptService/FishingService.server.lua
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+
+local remotes = ReplicatedStorage:WaitForChild("Remotes")
+local fishByPlayer: {[Player]: {string}} = {}
+local baitByPlayer: {[Player]: number} = {}
+
+local FISH = { "Carp", "Trout", "Golden Koi", "Moonfish" }
+
+local function catchFish(player: Player)
+    local bait = baitByPlayer[player] or 0
+    if bait <= 0 then return end
+    baitByPlayer[player] = bait - 1
+    local inventory = fishByPlayer[player] or {}
+    if #inventory >= 30 then return end
+    table.insert(inventory, FISH[math.random(1, #FISH)])
+    fishByPlayer[player] = inventory
+end
+
+remotes.CastLine.OnServerEvent:Connect(catchFish)
+Players.PlayerRemoving:Connect(function(player)
+    fishByPlayer[player] = nil
+    baitByPlayer[player] = nil
+end)
+
+\`\`\`
+
+The exact parts of your brief are preserved above; the next step is wiring the sell prices and the UI layout you prefer.`;
+  }
+
   if (lower.includes("shop") || lower.includes("store") || lower.includes("buy")) {
-    return `## Shop System
+    return `${brief}## Shop System
 
 Creating a full shop with currency, items, and GUI.
 
@@ -435,7 +503,7 @@ end)
   }
 
   if (lower.includes("pet") || lower.includes("egg") || lower.includes("hatch")) {
-    return `## Pet System
+    return `${brief}## Pet System
 
 Creating a complete pet system with egg hatching, following, and inventory.
 
@@ -508,7 +576,7 @@ end
   }
 
   if (lower.includes("npc") || lower.includes("enemy") || lower.includes("zombie")) {
-    return `## NPC Enemy System
+    return `${brief}## NPC Enemy System
 
 Adding enemy NPCs with pathfinding AI that chase and attack players.
 
@@ -590,7 +658,7 @@ end
   }
 
   if (lower.includes("racing") || lower.includes("race") || lower.includes("kart")) {
-    return `## Racing System
+    return `${brief}## Racing System
 
 Building a racing track with vehicles, checkpoints, and leaderboards.
 
@@ -651,25 +719,21 @@ end
 \`\`\``;
   }
 
-  return `I'll work on that for you. Let me analyze your request and build the appropriate game systems.
+  return `${brief}## Roblox build plan
 
-**Processing:** "${message}"
+I will keep the requested mechanic as the source of truth and avoid inventing unrelated systems.
 
-Here's my approach:
+### Implementation plan
 1. Analyze your current Studio scene structure
 2. Plan the required instances, scripts, and UI elements
 3. Generate clean, typed Luau code
 4. Create all necessary parts and configurations
-5. Sync everything to your Roblox Studio session
+5. Sync only the requested changes to your Roblox Studio session
 
 \`\`\`lua
 -- This is where the generated code will appear
--- The AI model is processing your request...
--- Try specifying a system: combat, shop, pets, NPCs, racing, or obby
+-- The request is preserved above so the next generation stays grounded.
 \`\`\`
 
-**Tip:** For best results, be specific about what you want. For example:
-- "Add a sword with 3-hit combo and special attack"
-- "Create a shop with 4 item categories and coin currency"
-- "Build an obby with 20 stages and checkpoint saves"`;
+Tell me the one part you want implemented first, and I will change only that part.`;
 }
