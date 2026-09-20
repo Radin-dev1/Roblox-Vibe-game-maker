@@ -296,13 +296,14 @@ export default function StudioPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-[100dvh]" style={{ backgroundColor: "var(--bg)" }}>
+    <div className="studio-shell relative flex flex-col min-h-[100dvh] overflow-hidden" style={{ backgroundColor: "var(--bg)" }}>
+      <div className="studio-grid pointer-events-none absolute inset-0" />
       {/* Top bar */}
       <motion.header
         initial={{ y: -10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
-        className="flex items-center justify-between px-4 md:px-6 py-3 border-b transition-theme"
+        className="studio-surface relative z-10 flex items-center justify-between px-4 md:px-6 py-3 border-b transition-theme"
         style={{ borderColor: "var(--edge)" }}
       >
         <Link href="/" className="flex items-center gap-2.5">
@@ -335,7 +336,7 @@ export default function StudioPage() {
       </motion.header>
 
       {/* Chat area */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 md:px-0">
+      <div ref={scrollRef} className="relative z-10 flex-1 overflow-y-auto px-4 md:px-0">
         <div className="max-w-2xl mx-auto py-8">
           {messages.length === 0 ? (
             <motion.div
@@ -367,6 +368,16 @@ export default function StudioPage() {
                 Describe any game feature and I&apos;ll build it directly in your
                 Roblox Studio session.
               </p>
+
+              <div className="mb-8 grid w-full max-w-2xl grid-cols-3 gap-2 text-left">
+                {[['01', 'Describe', 'Your mechanic, world, or asset'], ['02', 'Generate', 'Luau, visuals, and a clear result'], ['03', 'Review', 'Only confirmed Studio changes']].map(([number, title, detail]) => (
+                  <div key={number} className="studio-surface rounded-2xl p-3">
+                    <span className="text-[10px] font-mono text-teal/80">{number}</span>
+                    <p className="mt-2 text-[12px] font-medium" style={{ color: "var(--text)" }}>{title}</p>
+                    <p className="mt-1 text-[10px] leading-relaxed" style={{ color: "var(--text-muted)" }}>{detail}</p>
+                  </div>
+                ))}
+              </div>
 
               <div className="flex flex-wrap justify-center gap-2 max-w-lg">
                 {SUGGESTIONS.map((suggestion, i) => (
@@ -431,7 +442,7 @@ export default function StudioPage() {
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2, ease: [0.32, 0.72, 0, 1] }}
-        className="sticky bottom-0 px-4 md:px-0 pb-5 pt-3"
+        className="relative z-10 sticky bottom-0 px-4 md:px-0 pb-5 pt-3"
         style={{ background: `linear-gradient(to top, var(--gradient-fade-from), var(--gradient-fade-via), transparent)` }}
       >
         <div className="max-w-2xl mx-auto">

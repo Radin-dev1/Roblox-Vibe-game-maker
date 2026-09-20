@@ -1,4 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vibe — Roblox AI Maker
+
+Vibe is a Roblox-focused AI workspace for Luau planning, thumbnails, asset uploads, and Studio plugin sync.
+
+## Run in GitHub Codespaces
+
+Open this repository in Codespaces. The included dev container installs Node 20 and forwards port 3000.
+
+```bash
+npm run dev
+```
+
+Open the forwarded port and go to `/studio`. Add a Hugging Face access token in Settings when hosted inference requires one. Vibe never claims a Roblox Studio change unless the plugin reports one.
+
+## Run locally
+
+```bash
+npm ci
+npm run dev
+```
+
+GitHub Actions runs `npm ci` and `npm run build` on every push and pull request.
 
 ## Getting Started
 

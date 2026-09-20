@@ -43,9 +43,10 @@ export default function Footer() {
             </div>
             <span className="text-[14px] font-semibold tracking-tight" style={{ color: "var(--text)" }}>Vibe</span>
           </div>
-          <p className="text-[12px] font-light" style={{ color: "var(--text-faint)" }}>
-            Built by Radin. Not affiliated with Roblox Corporation.
-          </p>
+          <div className="flex items-center gap-4">
+            <a href="https://github.com/Radin-dev1/Roblox-Vibe-game-maker" target="_blank" rel="noreferrer" className="text-[12px] font-medium text-teal/80 hover:text-teal">Open on GitHub ↗</a>
+            <p className="text-[12px] font-light" style={{ color: "var(--text-faint)" }}>Built by Radin. Not affiliated with Roblox Corporation.</p>
+          </div>
         </div>
       </div>
     </footer>
